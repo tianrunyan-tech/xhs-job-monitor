@@ -25,26 +25,54 @@ The goal is to automate the full workflow from **search -> filtering -> structur
 - Filters traffic-style referral ads, agency-like posts, non-recruiting posts, and mismatched roles before writing records.
 - Upserts records into Feishu Bitable by `note_id`, with newer and higher-match jobs prioritized.
 
-## Setup
+## 安装
 
-Copy the example files and fill your own local credentials:
+把这个仓库放到你的 agent 的 skill/command 目录下。
+
+**Codex：**
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R xhs-job-monitor ~/.codex/skills/xhs-job-monitor
+```
+
+**其他 Agent：**
+
+放到你的 agent 读取 skill/command 定义的目录下即可。
+
+## 前置条件
+
+- 安装并登录可用的小红书 CLI，确保 `xhs status` 可用
+- 准备飞书开放平台应用，并配置多维表格读写权限
+- 准备 LLM API Key，用于关键词扩写和招聘帖结构化提取
+- 复制示例配置并填写本地凭据：
 
 ```bash
 cp .env.local.example .env.local
 cp references/config.example.yaml config.local.yaml
 ```
 
-Required local values:
+```bash
+MINIMAX_API_KEY="your_api_key"
+```
 
-- `MINIMAX_API_KEY` in `.env.local`
-- Feishu app credentials and Bitable IDs in `config.local.yaml`
-- Xiaohongshu CLI authentication via the configured `xhs` command
+## 使用
 
-Local credential files are ignored by git.
+在 Agent 中直接描述你想找的岗位：
 
-## Run
+```text
+帮我找 AI产品运营实习 岗位
+```
 
-Replace `<你的岗位关键词>` with the job target entered by the user, such as `AI产品运营实习`, `算法实习`, or `大模型产品经理实习`.
+也可以补充筛选条件：
+
+```text
+只看字节、腾讯、阿里等知名科技大厂和初创公司，最近3天，只查找一次。
+```
+
+Agent 会先确认岗位和限制条件，再开始搜索、筛选、结构化提取，并把结果写入飞书多维表格。
+
+如果你需要直接运行脚本，可以使用：
 
 ```bash
 source .env.local
@@ -56,21 +84,21 @@ python3 scripts/run_search_sync.py \
   --json
 ```
 
-The first search defaults to writing up to 50 records after deduplication and filtering. Pass `--limit <数量>` only when you want to override that default.
+首次搜索默认在去重、过滤后最多写入 50 条。只有需要覆盖默认值时，再传 `--limit <数量>`。
 
-Example:
+## 支持的能力
 
-```bash
-python3 scripts/run_search_sync.py \
-  --config config.local.yaml \
-  --keyword "AI产品运营实习" \
-  --auto-table \
-  --login-if-needed \
-  --json
-```
+| 能力 | Agent 怎么做 |
+| ---- | ------------ |
+| 约束收集 | 在搜索前询问公司、地点、岗位类型、时间范围、更新周期等偏好 |
+| 关键词扩写 | 把用户输入的岗位扩写成更适合小红书搜索的关键词集合 |
+| 小红书搜索 | 按关键词和时间窗口搜索招聘相关笔记 |
+| 帖子读取 | 读取标题、正文、图片 OCR 文本和首条评论 |
+| 招聘帖判定 | 用 LLM 过滤面经、求职广告、中介引流、泛化内推帖和岗位不匹配内容 |
+| 信息结构化 | 提取公司、岗位、城市、职责、要求、联系方式、发布时间和原帖链接 |
+| 飞书同步 | 按 `note_id` 去重并写入飞书多维表格 |
+| 定时更新 | 按用户设置或默认周期继续搜索新的招聘帖 |
 
-## Optional Bot Entry Points
+## License
 
-- `scripts/bot_ws_client.py`: Feishu long-connection bot mode.
-- `scripts/bot_server.py`: HTTP callback fallback.
-- `references/com.xhs-job-monitor.bot.plist`: launchd template for the long-connection bot. Replace `/path/to/xhs-job-monitor` before use.
+MIT
