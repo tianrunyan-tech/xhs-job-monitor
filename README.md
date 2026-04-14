@@ -42,7 +42,7 @@ cp -R xhs-job-monitor ~/.codex/skills/xhs-job-monitor
 
 ## 前置条件
 
-- 安装并配置好 [Xhs CLI](https://github.com/jackwener/xiaohongshu-cli)，确保本地可以执行 `xhs status`
+- 安装并配置好 [Xhs CLI](https://github.com/jackwener/xiaohongshu-cli)
 - 创建飞书开放平台应用，并配置多维表格读写权限
 - 准备 LLM API Key，用于关键词扩写和招聘帖结构化提取
 - 复制示例配置并填写本地凭据：
@@ -53,47 +53,24 @@ cp references/config.example.yaml config.local.yaml
 ```
 
 ```bash
-MINIMAX_API_KEY="your_api_key"
+LLM_API_KEY="your_openai_compatible_api_key"
 ```
-
-默认会通过 `references/config.example.yaml` 里的 `runtime.xhs_command` 调用 Xhs CLI：
-
-```yaml
-runtime:
-  xhs_command: "xhs"
-```
-
-如果你的 Xhs CLI 安装路径或命令名不是 `xhs`，把 `runtime.xhs_command` 改成对应路径即可。
 
 ## 使用
 
 在 Agent 中直接描述你想找的岗位：
 
 ```text
-帮我找 AI产品运营实习 岗位
+帮我找AI产品运营的实习岗位
 ```
 
 也可以补充筛选条件：
 
 ```text
-只看字节、腾讯、阿里等知名科技大厂和初创公司，最近3天，只查找一次。
+只看字节、腾讯、阿里等知名科技大厂和初创公司，最近3天。
 ```
 
 Agent 会先确认岗位和限制条件，再开始搜索、筛选、结构化提取，并把结果写入飞书多维表格。
-
-如果你需要直接运行脚本，可以使用：
-
-```bash
-source .env.local
-python3 scripts/run_search_sync.py \
-  --config config.local.yaml \
-  --keyword "<你的岗位关键词>" \
-  --auto-table \
-  --login-if-needed \
-  --json
-```
-
-首次搜索默认在去重、过滤后最多写入 50 条。只有需要覆盖默认值时，再传 `--limit <数量>`。
 
 ## 支持的能力
 
@@ -105,7 +82,7 @@ python3 scripts/run_search_sync.py \
 | 帖子读取 | 读取标题、正文、图片 OCR 文本和首条评论 |
 | 招聘帖判定 | 用 LLM 过滤面经、求职广告、中介引流、泛化内推帖和岗位不匹配内容 |
 | 信息结构化 | 提取公司、岗位、城市、职责、要求、联系方式、发布时间和原帖链接 |
-| 飞书同步 | 按 `note_id` 去重并写入飞书多维表格 |
+| 飞书同步 | 去重并写入飞书多维表格 |
 | 定时更新 | 按用户设置或默认周期继续搜索新的招聘帖 |
 
 ## License

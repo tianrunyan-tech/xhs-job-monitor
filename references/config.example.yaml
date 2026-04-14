@@ -8,10 +8,10 @@ search:
   lookback_hours: 48
 llm:
   provider: "openai_compatible"
-  model: "MiniMax-M2.7"
+  model: "your-model-name"
   temperature: 0
-  api_base: "https://api.minimaxi.com/v1"
-  api_key_env: "MINIMAX_API_KEY"
+  api_base: "https://your-openai-compatible-endpoint/v1"
+  api_key_env: "LLM_API_KEY"
   timeout_seconds: 20
 feishu:
   app_id: "cli_xxx"

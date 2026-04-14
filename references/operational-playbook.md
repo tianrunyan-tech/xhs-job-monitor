@@ -44,7 +44,7 @@ In Feishu Open Platform, set event subscription to long connection mode, subscri
 Run:
 
 ```bash
-MINIMAX_API_KEY="..." python scripts/bot_ws_client.py --config references/config.example.yaml --limit 50
+LLM_API_KEY="..." python scripts/bot_ws_client.py --config references/config.example.yaml --limit 50
 ```
 
 Users can send either the `/job` command or a natural request:
@@ -71,7 +71,7 @@ Use this mode only for request-response bot callbacks. This script does not own 
 Run the bot callback service:
 
 ```bash
-MINIMAX_API_KEY="..." python scripts/bot_server.py --config references/config.example.yaml --port 8787 --limit 50
+LLM_API_KEY="..." python scripts/bot_server.py --config references/config.example.yaml --port 8787 --limit 50
 ```
 
 Expose the local port with your preferred tunnel or deployment gateway, then configure the Feishu app event callback URL to this service. Subscribe the app to message receive events and grant message send plus bitable table/record read-write permissions.
