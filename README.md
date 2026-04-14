@@ -44,8 +44,22 @@ Local credential files are ignored by git.
 
 ## Run
 
+Replace `<你的岗位关键词>` with the job target entered by the user, such as `AI产品运营实习`, `算法实习`, or `大模型产品经理实习`.
+
 ```bash
 source .env.local
+python3 scripts/run_search_sync.py \
+  --config config.local.yaml \
+  --keyword "<你的岗位关键词>" \
+  --auto-table \
+  --limit 50 \
+  --login-if-needed \
+  --json
+```
+
+Example:
+
+```bash
 python3 scripts/run_search_sync.py \
   --config config.local.yaml \
   --keyword "AI产品运营实习" \
