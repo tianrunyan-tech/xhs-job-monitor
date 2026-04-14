@@ -1,20 +1,34 @@
 # XHS Job Monitor
 
-[中文](README.md) | English
+[中文](README_CN.md) | English
 
 XHS Job Monitor is a Codex skill for monitoring Xiaohongshu recruiting posts, filtering noisy results, extracting structured job fields with an LLM, and syncing results to a Feishu Bitable.
 
 ## Who Is This For?
 
-Students and job seekers looking for internships or campus recruiting opportunities through Xiaohongshu.
+Students and early-career candidates seeking internship or campus recruiting opportunities.
 
-Xiaohongshu is a useful recruiting source because many posts are written by team members. For internships, especially replacement internships, posts often include a direct email, referral path, or private-message channel. The application path can be shorter than a standard job board flow and may not require the same HR screening steps.
+Beyond traditional job boards and corporate career sites, Xiaohongshu has emerged as a high-signal yet underutilized recruiting channel -- an **unstructured job market with strong informational edge**. As a highly active social platform, it offers several advantages over conventional hiring pipelines:
 
-The problem is that Xiaohongshu recruiting information is fragmented and noisy:
+- **Direct access to hiring teams**  
+  A significant portion of posts are created by frontline team members or outgoing interns, often for "replacement" roles. Compared to the traditional HR-driven funnel, the application path is substantially flatter and faster.
 
-- **Low timeliness**: manual refreshes are slow, so candidates can miss the first hour after a post is published, which is often the best time to apply.
-- **Low efficiency**: default/latest ranking mixes many irrelevant results, including old posts, ads, referral traffic posts, agency posts, and mismatched jobs.
-- **High extraction cost**: useful information is scattered across the note title, body text, images/OCR, and first comment, so manually copying it into a table is tedious.
+- **More transparent and authentic information**  
+  Posts frequently include candid details about team context, responsibilities, and expectations. Many provide direct contact methods, such as team email or private messaging, enabling immediate communication without intermediary layers.
+
+- **High-quality, rapidly growing supply**  
+  Due to better targeting and faster response loops, an increasing number of teams are choosing Xiaohongshu as a primary channel for sourcing candidates.
+
+Despite its advantages, recruiting information on Xiaohongshu is highly fragmented and noisy:
+
+- **Limited timeliness**  
+  Users rely on manual refresh and feed browsing, making it easy to miss the critical early window after a post goes live, often when response rates are highest.
+
+- **Low search precision**  
+  Both default and latest sorting are heavily polluted with irrelevant content, including outdated posts, personal interview write-ups, training advertisements, and agency-driven referral posts. Signal-to-noise ratio is low, and filtering is time-consuming.
+
+- **High extraction cost**  
+  Key information is distributed across multiple modalities: title, body text, images requiring OCR, and first comment. Manually consolidating this into a structured format is inefficient. Candidates may also lose track of submitted applications, and posts may be deleted.
 
 ## What It Does
 
@@ -33,9 +47,18 @@ Put this repository in the skill/command directory used by your agent.
 
 **Codex:**
 
+If installing directly from GitHub:
+
 ```bash
 mkdir -p ~/.codex/skills
-cp -R xhs-job-monitor ~/.codex/skills/xhs-job-monitor
+git clone https://github.com/tianrunyan-tech/xhs-job-monitor.git ~/.codex/skills/xhs-job-monitor
+```
+
+If you have already downloaded this repository and are currently in the repository root:
+
+```bash
+mkdir -p ~/.codex/skills/xhs-job-monitor
+cp -R SKILL.md README.md README_CN.md LICENSE .env.local.example references scripts tests ~/.codex/skills/xhs-job-monitor/
 ```
 
 **Other agents:**

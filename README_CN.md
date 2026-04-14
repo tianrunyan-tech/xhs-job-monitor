@@ -1,6 +1,6 @@
 # XHS Job Monitor
 
-中文 | [English](README.en.md)
+中文 | [English](README.md)
 
 XHS Job Monitor 是一个 Codex skill，用于监控小红书招聘帖、过滤噪声内容、用 LLM 提取结构化岗位信息，并同步到飞书多维表格。
 
@@ -35,7 +35,14 @@ XHS Job Monitor 是一个 Codex skill，用于监控小红书招聘帖、过滤�
 
 ```bash
 mkdir -p ~/.codex/skills
-cp -R xhs-job-monitor ~/.codex/skills/xhs-job-monitor
+git clone https://github.com/tianrunyan-tech/xhs-job-monitor.git ~/.codex/skills/xhs-job-monitor
+```
+
+如果你已经下载了这个仓库，并且当前就在仓库根目录：
+
+```bash
+mkdir -p ~/.codex/skills/xhs-job-monitor
+cp -R SKILL.md README.md README_CN.md LICENSE .env.local.example references scripts tests ~/.codex/skills/xhs-job-monitor/
 ```
 
 **其他 Agent：**
