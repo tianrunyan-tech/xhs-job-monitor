@@ -11,7 +11,7 @@ Xiaohongshu is a useful recruiting source because many posts are written by team
 The problem is that Xiaohongshu recruiting information is fragmented and noisy:
 
 - **Low timeliness**: manual refreshes are slow, so candidates can miss the first hour after a post is published, which is often the best time to apply.
-- **Low effiency**: default/latest ranking mixes many irrelevant results, including old posts, ads, referral traffic posts, agency posts, and mismatched jobs.
+- **Low efficiency**: default/latest ranking mixes many irrelevant results, including old posts, ads, referral traffic posts, agency posts, and mismatched jobs.
 - **High extraction cost**: useful information is scattered across the note title, body text, images/OCR, and first comment, so manually copying it into a table is tedious.
 
 ## What It Does
@@ -74,18 +74,3 @@ python3 scripts/run_search_sync.py \
 - `scripts/bot_ws_client.py`: Feishu long-connection bot mode.
 - `scripts/bot_server.py`: HTTP callback fallback.
 - `references/com.xhs-job-monitor.bot.plist`: launchd template for the long-connection bot. Replace `/path/to/xhs-job-monitor` before use.
-
-## Tests
-
-```bash
-python3 -m py_compile scripts/*.py scripts/adapters/*.py
-python3 -m unittest discover -s tests
-```
-
-## Public Repo Safety
-
-Before publishing, verify that only example configs are included:
-
-- Keep `.env.local.example`.
-- Keep `references/config.example.yaml`.
-- Do not commit `.env.local`, `config.local.yaml`, `logs/`, `__pycache__/`, or `.DS_Store`.
