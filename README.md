@@ -1,29 +1,31 @@
 # XHS Job Monitor
 
-A Codex skill for monitoring Xiaohongshu recruiting posts, filtering noisy results, extracting structured job fields with an LLM, and syncing results to a Feishu Bitable.
+中文 | [English](README.en.md)
 
-## Who Is This For?
+XHS Job Monitor 是一个 Codex skill，用于监控小红书招聘帖、过滤噪声内容、用 LLM 提取结构化岗位信息，并同步到飞书多维表格。
 
-Students and job seekers looking for internships or campus recruiting opportunities through Xiaohongshu.
+## 适合谁？
 
-Xiaohongshu is a useful recruiting source because many posts are written by team members. For internships, especially replacement internships, posts often include a direct email, referral path, or private-message channel. The application path can be shorter than a standard job board flow and may not require the same HR screening steps.
+适合正在通过小红书寻找实习、校招机会的学生和求职者。
 
-The problem is that Xiaohongshu recruiting information is fragmented and noisy:
+小红书是一个有价值的招聘信息源，因为很多招聘帖来自团队成员。对实习岗位，尤其是实习继任岗位来说，帖子里经常会包含直投邮箱、内推路径或私信沟通方式。相比标准招聘网站，这条链路更短，也可能不需要经过完整的 HR 筛选流程。
 
-- **Low timeliness**: manual refreshes are slow, so candidates can miss the first hour after a post is published, which is often the best time to apply.
-- **Low efficiency**: default/latest ranking mixes many irrelevant results, including old posts, ads, referral traffic posts, agency posts, and mismatched jobs.
-- **High extraction cost**: useful information is scattered across the note title, body text, images/OCR, and first comment, so manually copying it into a table is tedious.
+但小红书招聘信息也很碎片化、噪声多：
 
-## What It Does
+- **时效性低**：手动刷新频率低，容易错过岗位发布后的黄金 1 小时。
+- **搜索效率低**：默认排序或 latest 排序会混入旧帖、广告、流量型内推帖、中介帖和岗位不匹配内容。
+- **提取成本高**：有效信息分散在标题、正文、图片 OCR、首条评论里，手动整理到表格很低效。
 
-The goal is to automate the full workflow from **search -> filtering -> structured extraction -> Feishu Bitable sync**, producing a high-timeliness recruiting dashboard with cleaner, more actionable job records.
+## 它能做什么？
 
-- Expands a user job target into Xiaohongshu-friendly search keywords to improve recall.
-- Searches Xiaohongshu notes by time window and reads note detail, OCR text, and first comments when available.
-- Uses an LLM to classify whether a note is a real, concrete recruiting post.
-- Extracts structured fields such as company, job title, location, responsibilities, requirements, contact info, publish time, and note URL.
-- Filters traffic-style referral ads, agency-like posts, non-recruiting posts, and mismatched roles before writing records.
-- Upserts records into Feishu Bitable by `note_id`, with newer and higher-match jobs prioritized.
+目标是把 **搜索 -> 筛选 -> 结构化提取 -> 飞书多维表格同步** 的全链路自动化，生成一个时效性更高、信息更干净、更可投递的招聘信息看板。
+
+- 将用户输入的目标岗位扩写成更适合小红书搜索的关键词集合，提高召回率。
+- 按时间窗口搜索小红书笔记，并读取帖子详情、图片 OCR 文本和首条评论。
+- 使用 LLM 判断帖子是否是真实、具体的招聘帖。
+- 提取公司、岗位、城市、职责、要求、联系方式、发布时间、原帖链接等结构化字段。
+- 在写入前过滤流量型内推广告、中介帖、非招聘帖和岗位不匹配内容。
+- 按 `note_id` 去重并同步到飞书多维表格，优先保留发布时间更新、岗位匹配度更高的记录。
 
 ## 安装
 
