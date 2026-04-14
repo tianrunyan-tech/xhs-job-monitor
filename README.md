@@ -42,7 +42,7 @@ cp -R xhs-job-monitor ~/.codex/skills/xhs-job-monitor
 
 ## 前置条件
 
-- 安装并登录可用的小红书 CLI，确保 `xhs status` 可用
+- 准备一个可用的小红书数据源适配器。默认配置会调用名为 `xhs` 的本地命令行工具，但这个仓库不包含该工具的安装包
 - 准备飞书开放平台应用，并配置多维表格读写权限
 - 准备 LLM API Key，用于关键词扩写和招聘帖结构化提取
 - 复制示例配置并填写本地凭据：
@@ -55,6 +55,25 @@ cp references/config.example.yaml config.local.yaml
 ```bash
 MINIMAX_API_KEY="your_api_key"
 ```
+
+默认的小红书适配器通过 `references/config.example.yaml` 里的 `runtime.xhs_command` 配置：
+
+```yaml
+runtime:
+  xhs_command: "xhs"
+```
+
+这个命令需要支持以下能力：
+
+```bash
+xhs status --json
+xhs login --qrcode
+xhs search "<关键词>" --sort latest --page 1 --type image --json
+xhs read "<note_id>" --json
+xhs comments "<note_id>" --json
+```
+
+如果你没有现成的 `xhs` CLI，需要先实现或接入一个兼容上述接口的数据源命令，再把 `runtime.xhs_command` 改成对应命令路径。
 
 ## 使用
 
