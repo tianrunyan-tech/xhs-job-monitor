@@ -52,10 +52,11 @@ python3 scripts/run_search_sync.py \
   --config config.local.yaml \
   --keyword "<你的岗位关键词>" \
   --auto-table \
-  --limit 50 \
   --login-if-needed \
   --json
 ```
+
+The first search defaults to writing up to 50 records after deduplication and filtering. Pass `--limit <数量>` only when you want to override that default.
 
 Example:
 
@@ -64,7 +65,6 @@ python3 scripts/run_search_sync.py \
   --config config.local.yaml \
   --keyword "AI产品运营实习" \
   --auto-table \
-  --limit 50 \
   --login-if-needed \
   --json
 ```
