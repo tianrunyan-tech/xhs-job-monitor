@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.xhs-job-monitor.bot</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/path/to/xhs-job-monitor/scripts/start_bot_ws.sh</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/path/to/xhs-job-monitor</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/path/to/xhs-job-monitor/logs/bot_ws.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/path/to/xhs-job-monitor/logs/bot_ws.err.log</string>
+</dict>
+</plist>

@@ -1,0 +1,24 @@
+keywords:
+  - "AI产品经理实习"
+  - "产品经理实习"
+search:
+  sort: "latest"
+  max_pages: 3
+  note_type: "normal"
+  lookback_hours: 48
+llm:
+  provider: "openai_compatible"
+  model: "MiniMax-M2.7"
+  temperature: 0
+  api_base: "https://api.minimaxi.com/v1"
+  api_key_env: "MINIMAX_API_KEY"
+  timeout_seconds: 20
+feishu:
+  app_id: "cli_xxx"
+  app_secret: "xxx"
+  app_token: "bascnx_xxx"
+  table_id: "tblxxx"
+runtime:
+  output_format: "json"
+  cache_dir: "~/.codex/xhs-job-monitor"
+  xhs_command: "xhs"
