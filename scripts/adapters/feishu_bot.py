@@ -72,3 +72,37 @@ class FeishuBotAdapter:
                 "content": json.dumps({"text": text}, ensure_ascii=False),
             },
         )
+
+    @staticmethod
+    def _card_content(markdown_text: str) -> str:
+        return json.dumps(
+            {
+                "config": {"wide_screen_mode": True},
+                "elements": [
+                    {"tag": "div", "text": {"tag": "lark_md", "content": markdown_text}}
+                ],
+            },
+            ensure_ascii=False,
+        )
+
+    def send_card(self, chat_id: str, markdown_text: str) -> None:
+        self._request(
+            "POST",
+            "/im/v1/messages",
+            {
+                "receive_id": chat_id,
+                "msg_type": "interactive",
+                "content": self._card_content(markdown_text),
+            },
+            query={"receive_id_type": "chat_id"},
+        )
+
+    def reply_card(self, message_id: str, markdown_text: str) -> None:
+        self._request(
+            "POST",
+            f"/im/v1/messages/{message_id}/reply",
+            {
+                "msg_type": "interactive",
+                "content": self._card_content(markdown_text),
+            },
+        )

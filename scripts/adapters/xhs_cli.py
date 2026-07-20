@@ -108,7 +108,7 @@ class XhsCliAdapter:
             return [note_ref, "--xsec-token", xsec_token]
         return [note_ref]
 
-    def read_note(self, note_ref: str, keyword: str) -> NoteDetail:
+    def read_note(self, note_ref: str, keyword: str, fetch_first_comment: bool = False) -> NoteDetail:
         payload = self._run(["read"] + self._note_ref_args(note_ref))
         data = payload.get("data") or {}
         if isinstance(data, dict) and isinstance(data.get("items"), list) and data["items"]:
@@ -117,12 +117,10 @@ class XhsCliAdapter:
         if summary is None:
             raise XhsCliError("parse_error", f"Unable to parse note summary for {note_ref}")
         content = data.get("desc") or data.get("content") or data.get("note_card", {}).get("desc") or ""
-        image_text = self._collect_image_text(data)
         return NoteDetail(
             **asdict(summary),
             raw_text=compact_text(content),
-            image_text=image_text,
-            first_comment=self.first_comment(note_ref),
+            first_comment=self.first_comment(note_ref) if fetch_first_comment else "",
             crawl_time=utc_now_iso(),
         )
 
@@ -139,16 +137,6 @@ class XhsCliAdapter:
         if not isinstance(first, dict):
             return compact_text(first)
         return compact_text(first.get("content") or first.get("text") or first.get("desc") or first)
-
-    def _collect_image_text(self, item: Dict[str, Any]) -> str:
-        candidates = []
-        for key in ("image_text", "ocr_text", "images", "image_list"):
-            value = item.get(key)
-            if isinstance(value, list):
-                candidates.extend(value)
-            elif value:
-                candidates.append(value)
-        return compact_text(candidates)
 
     def _extract_summary(self, item: Dict[str, Any], keyword: str) -> Optional[NoteSummary]:
         if not isinstance(item, dict):

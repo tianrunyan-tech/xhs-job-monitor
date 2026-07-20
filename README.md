@@ -97,6 +97,53 @@ You can also add filtering constraints:
 
 The agent will confirm the job target and constraints, then search, filter, extract structured fields, and write the results to Feishu Bitable.
 
+## Feishu Bot Interaction
+
+If you want users to talk to a Feishu bot directly instead of using the terminal, the repository already includes a long-connection bot entrypoint.
+
+1. Create a self-built Feishu app with bot capability and event subscription enabled.
+2. Subscribe to the `message receive v2` event.
+3. Prepare local config:
+
+```bash
+cp .env.local.example .env.local
+cp references/config.example.yaml config.local.yaml
+python3 -m pip install --user lark-oapi
+```
+
+4. Fill `config.local.yaml` with:
+   - `feishu.app_id`
+   - `feishu.app_secret`
+   - `feishu.app_token`
+   - `feishu.table_id` can be an existing table; the bot can also create per-keyword tables at runtime
+
+5. Start the bot:
+
+```bash
+./scripts/start_bot_ws.sh
+```
+
+Then a user can message the bot directly in Feishu:
+
+```text
+Help me find AI product manager internships
+```
+
+The bot will:
+- collect one round of constraints such as company, city, lookback window, and update cadence
+- run the search/filter/extraction/sync pipeline
+- return a structured job summary directly in chat
+- attach the Feishu Bitable link for full browsing
+
+Basic control commands:
+
+```text
+/help
+/jobs
+/rerun
+/stop
+```
+
 ## Supported Capabilities
 
 | Capability | What the Agent Does |

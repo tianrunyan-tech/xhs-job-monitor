@@ -82,6 +82,5 @@ class XhsCliTests(unittest.TestCase):
         items = adapter.search("kw", "latest", "all", 1)
         self.assertEqual(items[0].note_url, "https://www.xiaohongshu.com/discovery/item/n1?xsec_token=tok&xsec_source=pc_search")
 
-
 if __name__ == "__main__":
     unittest.main()

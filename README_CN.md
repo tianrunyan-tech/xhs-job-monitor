@@ -86,6 +86,53 @@ LLM_API_KEY="your_openai_compatible_api_key"
 
 Agent 会先确认岗位和限制条件，再开始搜索、筛选、结构化提取，并把结果写入飞书多维表格。
 
+## 飞书 Bot 交互
+
+如果你希望用户直接在飞书里和一个 bot 对话，可以使用项目内置的长连接 bot：
+
+1. 在飞书开放平台创建企业自建应用，开启机器人能力和事件订阅。
+2. 订阅 `接收消息 v2` 事件。
+3. 准备本地配置：
+
+```bash
+cp .env.local.example .env.local
+cp references/config.example.yaml config.local.yaml
+python3 -m pip install --user lark-oapi
+```
+
+4. 在 `config.local.yaml` 中填写：
+   - `feishu.app_id`
+   - `feishu.app_secret`
+   - `feishu.app_token`
+   - `feishu.table_id` 可以先填一个已有表，bot 运行时也会按关键词自动建表
+
+5. 启动 bot：
+
+```bash
+./scripts/start_bot_ws.sh
+```
+
+启动后，用户可以直接在飞书里给 bot 发消息：
+
+```text
+帮我找 AI产品经理实习
+```
+
+bot 会：
+- 先追问公司、城市、时间窗口、更新周期等限制条件
+- 自动执行搜索、筛选、结构化提取、写入飞书多维表格
+- 在聊天窗口直接返回岗位摘要
+- 附上完整结果表格链接，方便继续查看
+
+还支持这些基础命令：
+
+```text
+/help
+/jobs
+/rerun
+/stop
+```
+
 ## 支持的能力
 
 | 能力 | Agent 怎么做 |

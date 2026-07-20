@@ -13,6 +13,11 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
+if [[ ! -f "$CONFIG_FILE" ]]; then
+  echo "Missing $CONFIG_FILE. Copy references/config.example.yaml to config.local.yaml and fill your Feishu/XHS/LLM settings." >&2
+  exit 1
+fi
+
 set -a
 source "$ENV_FILE"
 set +a

@@ -17,6 +17,7 @@ class NoteSummary:
 @dataclass
 class NoteDetail(NoteSummary):
     raw_text: str = ""
+    image_urls: List[str] = field(default_factory=list)
     image_text: str = ""
     first_comment: str = ""
     crawl_time: Optional[str] = None
@@ -26,6 +27,7 @@ class NoteDetail(NoteSummary):
 class JobExtraction:
     is_job_post: bool
     confidence: float
+    judgment_reason: Optional[str] = None
     company: Optional[str] = None
     job_title: Optional[str] = None
     position_info: Optional[str] = None
@@ -58,6 +60,7 @@ class RunResult:
     data: List[Dict[str, Any]] = field(default_factory=list)
     errors: List[Dict[str, Any]] = field(default_factory=list)
     warnings: List[Dict[str, Any]] = field(default_factory=list)
+    debug: List[Dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         result = asdict(self)

@@ -3,7 +3,6 @@ import argparse
 import json
 import os
 import sys
-import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Dict
@@ -12,10 +11,8 @@ CURRENT_DIR = Path(__file__).resolve().parent
 if str(CURRENT_DIR) not in sys.path:
     sys.path.insert(0, str(CURRENT_DIR))
 
-from adapters.feishu_bitable import FeishuBitableAdapter
-from adapters.feishu_bot import FeishuBotAdapter
-from bot_logic import FIELD_SCHEMA, extract_message, format_constraint_collection, format_result_message, format_search_started_message, parse_job_command, parse_job_constraints, run_sync, table_name_for_keyword
-from config_loader import load_config
+from bot_logic import extract_message
+from bot_runtime import BotRuntime
 
 
 class BotHandler(BaseHTTPRequestHandler):
@@ -46,23 +43,7 @@ class BotHandler(BaseHTTPRequestHandler):
         if not chat_id or not text:
             self._send_json(200, {"ok": True, "ignored": True})
             return
-
-        if chat_id in self.server.pending_jobs and self.server.pending_jobs[chat_id].get("stage") == "collect_constraints":
-            job = self.server.pending_jobs.pop(chat_id)
-            constraints = parse_job_constraints(text, job["keyword"])
-            keyword = constraints["search_keyword"]
-            self.server.send_reply(chat_id, message_id, format_search_started_message())
-            threading.Thread(target=self.server.process_keyword, args=(chat_id, message_id, keyword, constraints["lookback_hours"], job["keyword"]), daemon=True).start()
-            self._send_json(200, {"ok": True})
-            return
-
-        keyword = parse_job_command(text)
-        if not keyword:
-            self._send_json(200, {"ok": True, "ignored": True})
-            return
-
-        self.server.pending_jobs[chat_id] = {"keyword": keyword, "stage": "collect_constraints"}
-        self.server.send_reply(chat_id, message_id, format_constraint_collection(keyword))
+        self.server.runtime.handle_text(chat_id, message_id, text)
         self._send_json(200, {"ok": True})
 
     def log_message(self, format: str, *args: Any) -> None:
@@ -72,33 +53,12 @@ class BotHandler(BaseHTTPRequestHandler):
 class BotServer(ThreadingHTTPServer):
     def __init__(self, address, handler, config_path: str, limit: int, verification_token: str):
         super().__init__(address, handler)
-        self.config_path = config_path
-        self.limit = limit
         self.verification_token = verification_token
-        self.config = load_config(config_path).raw
-        self.bitable = FeishuBitableAdapter(self.config["feishu"])
-        self.bot = FeishuBotAdapter(self.config["feishu"]["app_id"], self.config["feishu"]["app_secret"])
-        self.pending_jobs = {}
+        self.runtime = BotRuntime(config_path, limit, logger=self._log)
 
-    def send_reply(self, chat_id: str, message_id: str, text: str) -> None:
-        if message_id:
-            try:
-                self.bot.reply_text(message_id, text)
-                return
-            except Exception as exc:
-                print(f"reply_text failed, falling back to send_text: {exc}", file=sys.stderr)
-        self.bot.send_text(chat_id, text)
-
-    def process_keyword(self, chat_id: str, message_id: str, keyword: str, lookback_hours=None, table_keyword=None) -> None:
-        try:
-            table_name = table_name_for_keyword(table_keyword or keyword)
-            table_id = self.bitable.ensure_table(table_name, FIELD_SCHEMA)
-            result = run_sync(self.config_path, keyword, table_id, self.limit, lookback_hours=lookback_hours)
-            text = format_result_message(keyword, table_name, self.config['feishu']['app_token'], table_id, result)
-            self.send_reply(chat_id, message_id, text)
-        except Exception as exc:
-            print(f"process_keyword failed: {exc}", file=sys.stderr)
-            self.send_reply(chat_id, message_id, f"处理关键词失败：{keyword}\n错误：{exc}")
+    @staticmethod
+    def _log(payload, is_error=False):
+        print(json.dumps(payload, ensure_ascii=False), file=sys.stderr if is_error else sys.stdout)
 
 
 def main() -> int:

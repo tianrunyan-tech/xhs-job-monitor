@@ -1,6 +1,7 @@
 import unittest
+from unittest.mock import patch
 
-from scripts.adapters.llm_extract import OpenAICompatibleExtractor, is_traffic_referral_ad, parse_llm_response
+from scripts.adapters.llm_extract import OpenAICompatibleExtractor, parse_llm_response
 from scripts.schemas import NoteDetail
 
 
@@ -95,26 +96,51 @@ class LlmExtractTests(unittest.TestCase):
         self.assertFalse(result.is_job_post)
         self.assertEqual(result.confidence, 0.0)
 
-    def test_traffic_referral_ad_is_not_job_post(self):
-        note = NoteDetail(
-            note_id="1",
-            note_url="",
-            keyword="AI产品运营实习",
-            title="字节实习继任｜内推直达",
-            raw_text="急寻实习继任 内推简历直转字节部门leader 可投岗位：内容运营、用户增长、前端开发、后端开发、数据分析、软件测试、算法助理、电商运营、商业化运营、社区运营、平台运营、用户运营、HR助理、行政助理、法务助理",
-        )
-        self.assertTrue(is_traffic_referral_ad(note))
+    @patch("scripts.adapters.llm_extract.request.urlopen")
+    def test_extractor_retries_once_on_timeout(self, mock_urlopen):
+        note = NoteDetail(note_id="1", note_url="", keyword="kw")
 
-    def test_mock_extractor_rejects_traffic_referral_ad(self):
-        note = NoteDetail(
-            note_id="1",
-            note_url="",
-            keyword="AI产品运营实习",
-            title="字节实习继任｜内推直达",
-            raw_text="急寻实习继任 内推简历直转字节部门leader 可投岗位：内容运营、用户增长、前端开发、后端开发、数据分析、软件测试、算法助理、电商运营、商业化运营、社区运营、平台运营、用户运营、HR助理、行政助理、法务助理",
+        class FakeResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def read(self):
+                return b'{"choices":[{"message":{"content":"{\\"is_job_post\\": false, \\"data\\": null}"}}]}'
+
+        mock_urlopen.side_effect = [TimeoutError("timed out"), FakeResponse()]
+        extractor = OpenAICompatibleExtractor(
+            {
+                "provider": "openai_compatible",
+                "model": "m",
+                "api_base": "https://example.com/v1",
+                "api_key": "sk-test",
+                "timeout_seconds": 1,
+                "max_retries": 1,
+            }
         )
-        result = OpenAICompatibleExtractor({"provider": "mock"}).extract(note)
+        result = extractor.extract(note)
         self.assertFalse(result.is_job_post)
+        self.assertEqual(mock_urlopen.call_count, 2)
+
+    @patch.object(OpenAICompatibleExtractor, "_chat_completion")
+    def test_extract_uses_single_call_and_no_ocr_payload(self, mock_chat_completion):
+        mock_chat_completion.return_value = {
+            "choices": [{"message": {"content": '{"is_job_post": true, "confidence": 0.6, "judgment_reason": "是招聘", "data": {"company": "智谱", "job_title": "AI产品经理实习", "location": "北京", "position_info": "1. 做产品", "requirements": "1. 有经验", "contact_info": "hr@zhipu.cn"}}'}}]
+        }
+        extractor = OpenAICompatibleExtractor({"provider": "openai_compatible", "model": "m"})
+        note = NoteDetail(note_id="1", note_url="", keyword="kw", title="标题", raw_text="正文", image_text="图片OCR", first_comment="首评")
+        result = extractor.extract(note)
+        self.assertTrue(result.is_job_post)
+        self.assertEqual(result.company, "智谱")
+        self.assertEqual(result.contact_info, "hr@zhipu.cn")
+        self.assertEqual(result.confidence, 0.6)
+        self.assertEqual(mock_chat_completion.call_count, 1)
+        payload = mock_chat_completion.call_args[0][1]
+        self.assertEqual(payload["first_comment"], "首评")
+        self.assertNotIn("image_text", payload)
 
 
 if __name__ == "__main__":
