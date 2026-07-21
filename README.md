@@ -2,7 +2,7 @@
 
 [中文](README_CN.md) | English
 
-XHS Job Monitor is a Codex skill for monitoring Xiaohongshu recruiting posts, filtering noisy results, extracting structured job fields with an LLM, and syncing results to a Feishu Bitable.
+XHS Job Monitor is a Codex and Claude Code skill for monitoring Xiaohongshu recruiting posts, filtering noisy results, extracting structured job fields with an LLM, and syncing results to a Feishu Bitable.
 
 ## Who Is This For?
 
@@ -60,6 +60,24 @@ If you have already downloaded this repository and are currently in the reposito
 mkdir -p ~/.codex/skills/xhs-job-monitor
 cp -R SKILL.md README.md README_CN.md LICENSE .env.local.example references scripts tests ~/.codex/skills/xhs-job-monitor/
 ```
+
+**Claude Code:**
+
+If installing directly from GitHub:
+
+```bash
+mkdir -p ~/.claude/skills
+git clone https://github.com/tianrunyan-tech/xhs-job-monitor.git ~/.claude/skills/xhs-job-monitor
+```
+
+If you have already downloaded this repository and are currently in the repository root:
+
+```bash
+mkdir -p ~/.claude/skills/xhs-job-monitor
+cp -R SKILL.md README.md README_CN.md LICENSE references scripts tests ~/.claude/skills/xhs-job-monitor/
+```
+
+`SKILL.md` uses the same `name`/`description` frontmatter format Claude Code expects, so no changes are needed for it to be picked up. Keep credentials (`.env.local`, `config.local.yaml`) in your working project directory rather than under `~/.claude/skills/`, and point `--config` at that path when running the pipeline.
 
 **Other agents:**
 

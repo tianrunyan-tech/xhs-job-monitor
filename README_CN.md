@@ -2,18 +2,18 @@
 
 中文 | [English](README.md)
 
-一个 Codex skill: 用于自动化监控小红书招聘帖、实时提取目标岗位帖子，并将非结构化岗位信息提炼同步至飞书多维表格
+一个 Codex 和 Claude Code skill: 用于自动化监控小红书招聘帖、实时提取目标岗位帖子，并将非结构化岗位信息提炼同步至飞书多维表格
 
 ## 适合谁？
 
-正在寻找实习、校招机会的学生和求职者
+正在寻找实习、校招机会的学生和社招机会的求职者
 
 在常规的招聘软件与企业官网之外，小红书实际上隐藏着一座 **“求职金矿”**。作为一个高活跃度的社区，它具备传统招聘渠道无法比拟的优势：
 - **触达一线的扁平链路**：这里有大量来自业务团队一线员工、离职实习生发出的“直招”或“找继任”贴。相比于传统 HR 漫长的简历漏斗，这里的链路极其扁平。
-- **沟通更直接、信息更透明**：帖子往往会清晰描述真实的团队氛围，并直接附带业务线直投邮箱，甚至支持直接私信对话，省去了大量中间环节。
-- **信息源丰富**：由于触达目标人群更准、响应速度更快的优势，越来越多的用人团队习惯在小红书发布招聘需求
+- **信息更透明、沟通更直接**：帖子往往真实还原团队氛围与工作日常，并附带业务线的直投邮箱，支持私信直接对话，省去了大量中间环节和信息损耗
+- **信息源愈发丰富**：得益于触达目标人群更准、响应速度更快的优势，越来越多的用人团队习惯在小红书发布招聘需求
 
-但小红书招聘信息也很碎片化、噪声多：
+但小红书招聘信息存在碎片化、噪声多的问题：
 
 - **时效性低**：需要求职者手动刷新，频繁打开小红书查看主页推送，极易错过优质岗位发布后的最佳投递窗口
 - **搜索效率低**：不管是默认排序还是最新排序，搜索结果中总是混杂着大量过期旧帖、个人面经、培训广告和中介引流贴。在海量信息中筛选极其耗时。
@@ -49,6 +49,24 @@ git clone https://github.com/tianrunyan-tech/xhs-job-monitor.git ~/.codex/skills
 mkdir -p ~/.codex/skills/xhs-job-monitor
 cp -R SKILL.md README.md README_CN.md LICENSE .env.local.example references scripts tests ~/.codex/skills/xhs-job-monitor/
 ```
+
+**Claude Code：**
+
+如果直接从 GitHub 安装：
+
+```bash
+mkdir -p ~/.claude/skills
+git clone https://github.com/tianrunyan-tech/xhs-job-monitor.git ~/.claude/skills/xhs-job-monitor
+```
+
+如果你已经下载了这个仓库，并且当前就在仓库根目录：
+
+```bash
+mkdir -p ~/.claude/skills/xhs-job-monitor
+cp -R SKILL.md README.md README_CN.md LICENSE references scripts tests ~/.claude/skills/xhs-job-monitor/
+```
+
+`SKILL.md` 的 frontmatter 格式（`name`/`description`）和 Claude Code 的 skill 格式完全一致，不需要额外改动即可被识别。建议把凭据文件（`.env.local`、`config.local.yaml`）保留在你的工作项目目录下，而不是放进 `~/.claude/skills/`，运行时用 `--config` 指向该路径即可。
 
 **其他 Agent：**
 
